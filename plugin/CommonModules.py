@@ -27,7 +27,7 @@ from Screens.Screen import Screen
 from Screens.InfoBar import MoviePlayer as MP_parent
 from Screens.MessageBox import MessageBox
 from Screens.VirtualKeyBoard import VirtualKeyBoard
-from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_ACTIVE_SKIN
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_CURRENT_SKIN as SCOPE_ACTIVE_SKIN
 from enigma import eSize, ePicLoad, eTimer, eListbox, eListboxPythonMultiContent, gFont, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_TOP, RT_VALIGN_BOTTOM, RT_WRAP
 from twisted.web import client
 from dns.resolver import Resolver
