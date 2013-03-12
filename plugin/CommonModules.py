@@ -323,8 +323,9 @@ class MyHTTPHandler(urllib2.HTTPHandler):
 ###########################################################################	   
 class MoviePlayer(MP_parent):
 	def __init__(self, session, service, slist = None, lastservice = None):
-		MP_parent.__init__(self, session, service, slist, lastservice)
-
+#		MP_parent.__init__(self, session, service, slist, lastservice)
+		MP_parent.__init__(self, session, service)
+		
 	def leavePlayer(self):
 		self.close()
 
