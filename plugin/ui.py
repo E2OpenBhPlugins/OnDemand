@@ -108,11 +108,11 @@ class OnDemand_Screen(Screen, ConfigListScreen):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("OnDemand"))
 		
-		self["actions"]  = ActionMap(["SetupActions", "TimerEditActions"], {
+		self["actions"]  = ActionMap(["OkCancelActions", "MenuActions", "EPGSelectActions"], {
 			"ok"    : self.keyOK,
 			"cancel": self.keyCancel,
 			"menu" : self.keySetup,
-			"log" : self.keyInfo
+			"info" : self.keyInfo
 		}, -1)
 
 		self.picload = ePicLoad()
