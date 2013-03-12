@@ -8,5 +8,5 @@ setup (name = 'enigma2-plugin-extensions-ondemand',
        description='On Demand',
        packages = [pkg],
        package_dir = {pkg: 'plugin'},
-       package_data={pkg: ['*.png', 'LICENS*' 'icons/*.png']}
+       package_data={pkg: ['*.png', 'LICENS*', 'icons/*.png']}
       )
