@@ -318,6 +318,7 @@ class OpenUg(StreamsThumbCommon):
 				if tmp:
 					myreference = eServiceReference(4097, 0, tmp)
 					myreference.setName(self.mediaList[selIndex][self.UG_PROGNAME])
+# Black Hole
 #					lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
 #					self.session.open(MoviePlayer, myreference, None, lastservice)
 					self.session.open(MoviePlayer, myreference)

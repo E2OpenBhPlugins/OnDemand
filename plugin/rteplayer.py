@@ -288,6 +288,7 @@ class StreamsThumb(StreamsThumbCommon):
 			if fileUrl:
 				fileRef = eServiceReference(4097,0,fileUrl)
 				fileRef.setName (showName)
+# Black Hole
 #				lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
 #				self.session.open(MoviePlayer, fileRef, None, lastservice)
 				self.session.open(MoviePlayer, fileRef)

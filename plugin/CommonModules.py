@@ -27,6 +27,7 @@ from Screens.Screen import Screen
 from Screens.InfoBar import MoviePlayer as MP_parent
 from Screens.MessageBox import MessageBox
 from Screens.VirtualKeyBoard import VirtualKeyBoard
+# Black Hole
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_CURRENT_SKIN as SCOPE_ACTIVE_SKIN
 from enigma import eSize, ePicLoad, eTimer, eListbox, eListboxPythonMultiContent, gFont, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_TOP, RT_VALIGN_BOTTOM, RT_WRAP
 from twisted.web import client
@@ -323,6 +324,7 @@ class MyHTTPHandler(urllib2.HTTPHandler):
 ###########################################################################	   
 class MoviePlayer(MP_parent):
 	def __init__(self, session, service, slist = None, lastservice = None):
+# Black Hole
 #		MP_parent.__init__(self, session, service, slist, lastservice)
 		MP_parent.__init__(self, session, service)
 		

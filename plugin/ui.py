@@ -37,7 +37,7 @@ from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS
 
 from enigma import gFont, ePicLoad, eListboxPythonMultiContent, RT_HALIGN_RIGHT
 
-import bbciplayer, itvplayer, rteplayer, threeplayer, fourOD, OUG
+import bbciplayer, itvplayer, rteplayer, threeplayer, fourOD, OUG, iView
 
 ##########################################################################
 
@@ -61,6 +61,7 @@ class OnDemandScreenSetup(Screen, ConfigListScreen):
 		self.configlist.append(getConfigListEntry((_("RTE Player")), config.ondemand.ShowRTEPlayer))
 		self.configlist.append(getConfigListEntry((_("3 Player")), config.ondemand.Show3Player))
 		self.configlist.append(getConfigListEntry((_("OUG Player")), config.ondemand.ShowOUGPlayer))
+		self.configlist.append(getConfigListEntry((_("ABC iView")), config.ondemand.ShowiViewPlayer))
 		self.configlist.append(getConfigListEntry((_("Show thumbnails")), config.ondemand.ShowImages))
 		self["config"].setList(self.configlist)
 		
@@ -107,14 +108,14 @@ class OnDemand_Screen(Screen, ConfigListScreen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("OnDemand"))
-		
+# Black Hole		
 		self["actions"]  = ActionMap(["OkCancelActions", "MenuActions", "EPGSelectActions"], {
 			"ok"    : self.keyOK,
 			"cancel": self.keyCancel,
 			"menu" : self.keySetup,
 			"info" : self.keyInfo
 		}, -1)
-
+# end
 		self.picload = ePicLoad()
 		
 		self['PlayerList'] = chooseMenuList([])
@@ -137,6 +138,8 @@ class OnDemand_Screen(Screen, ConfigListScreen):
 			self.PlayerList.append(self.OnDemandListEntry("3 Player", "3player"))
 		if config.ondemand.ShowOUGPlayer.value:
 			self.PlayerList.append(self.OnDemandListEntry("OUG Player", "OUG"))
+		if config.ondemand.ShowiViewPlayer.value:
+			self.PlayerList.append(self.OnDemandListEntry("ABC iView", "iView"))
 
 		self["PlayerList"].setList(self.PlayerList)
 		self["PlayerList"].l.setItemHeight(100)
@@ -176,6 +179,8 @@ class OnDemand_Screen(Screen, ConfigListScreen):
 			self.session.open(fourOD.fourODMainMenu, "start", "0")
 		elif player == "OUG":
 			self.session.open(OUG.OpenUgSetupScreen, "start", "0")
+		elif player == "iView":
+			self.session.open(iView.iViewMenu, "start", "0")
 
 	def keyCancel(self):
 		self.close()
@@ -217,6 +222,7 @@ class OnDemand_About(Screen):
 		credit += "- subixonfire (used his version as a base for ITV)\n"
 		credit += "- mossy (used his version as a base for 4OD)\n"
 		credit += "- OpenUitzendingGemist team (used this as a design base)\n"
+		credit += "- Andy Botting (used his version as a base for ABC iView)\n"
 		credit += "- And every one else involved along the way as there are way to many to name!\n"
 		self["about"].setText(credit)
 		self.onFirstExecBegin.append(self.setImages)
