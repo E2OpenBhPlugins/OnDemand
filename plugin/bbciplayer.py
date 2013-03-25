@@ -43,7 +43,7 @@ from CommonModules import EpisodeList, MoviePlayer, MyHTTPConnection, MyHTTPHand
 
 __plugin__  = "BBC iPlayer: "
 __version__ = "Version 1.0.1: "
-
+#Now included 720p HD#
 #===================================================================================
 
 def wgetUrl(target):
