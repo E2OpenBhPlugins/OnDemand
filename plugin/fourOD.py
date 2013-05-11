@@ -858,3 +858,4 @@ def getJsonReady(value, **kwargs):
 def remove_extra_spaces(data):
 	p = re.compile(r'\s+')
 	return p.sub(' ', data)
+
