@@ -312,7 +312,7 @@ class StreamsThumbCommon(Screen):
 class MyHTTPConnection(HTTPConnection):
 	def connect (self):
 		resolver = Resolver()
-		resolver.nameservers = ['142.54.177.158']  #tunlr dns address
+		resolver.nameservers = ['192.95.16.109']  #tunlr dns address
 		answer = resolver.query(self.host,'A')
 		self.host = answer.rrset.items[0].address
 		self.sock = socket.create_connection ((self.host, self.port))
