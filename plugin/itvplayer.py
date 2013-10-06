@@ -130,7 +130,7 @@ class StreamsThumb(StreamsThumbCommon):
 			self.getSearchMediaData(self.mediaList, self.url, callback)
 			self.updateMenu()
 			if len(self.mediaList) == 0:
-				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_ERROR, timeout=5, simple = True)
+				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_ERROR, timeout=5)
 		else:
 			self.close()
 

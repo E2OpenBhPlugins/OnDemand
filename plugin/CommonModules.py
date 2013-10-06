@@ -408,7 +408,7 @@ class StreamsThumbCommon(Screen):
 			self.session.openWithCallback(self.keyboardCallback, VirtualKeyBoard, title = (_("Search term")), text = "")
 
 	def mediaProblemPopup(self, error):
-		self.session.openWithCallback(self.close, MessageBox, _(error), MessageBox.TYPE_ERROR, timeout=5, simple = True)
+		self.session.openWithCallback(self.close, MessageBox, _(error), MessageBox.TYPE_ERROR, timeout=5)
 
 ###########################################################################
 class MyHTTPConnection(HTTPConnection):
@@ -427,7 +427,7 @@ class MyHTTPHandler(urllib2.HTTPHandler):
 ###########################################################################	   
 class MoviePlayer(MP_parent):
 	def __init__(self, session, service, slist = None, lastservice = None):
-		MP_parent.__init__(self, session, service, slist, lastservice)
+		MP_parent.__init__(self, session, service)
 
 	def leavePlayer(self):
 		self.close()

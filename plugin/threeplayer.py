@@ -180,7 +180,7 @@ class StreamsThumb(StreamsThumbCommon):
 			self.getSearchMediaData(self.mediaList, callback)
 			self.updateMenu()
 			if len(self.mediaList) == 0:
-				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_ERROR, timeout=5, simple = True)
+				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_ERROR, timeout=5)
 		else:
 			self.close()
 
@@ -204,8 +204,8 @@ class StreamsThumb(StreamsThumbCommon):
 			if fileUrl:
 				fileRef = eServiceReference(4097,0,str(fileUrl))
 				fileRef.setName (showName)
-				lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-				self.session.open(MoviePlayer, fileRef, None, lastservice)
+#				lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+				self.session.open(MoviePlayer, fileRef, None)
 			else:
 				self.mediaProblemPopup("Sorry, unable to find playable stream!")
 

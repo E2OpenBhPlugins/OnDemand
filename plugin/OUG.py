@@ -295,7 +295,7 @@ class OpenUg(StreamsThumbCommon):
 			self.getMediaData(self.mediaList, self.STAGING_UG_BASE_URL + "ug/ajax/action/search/protocol/html/searchString/" + callback)
 			self.updateMenu()
 			if len(self.mediaList) == 0:
-				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_ERROR, timeout=5, simple = True)
+				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_ERROR, timeout=5)
 		else:
 			self.close()
 
@@ -320,8 +320,8 @@ class OpenUg(StreamsThumbCommon):
 				if tmp:
 					myreference = eServiceReference(4097, 0, tmp)
 					myreference.setName(self.mediaList[selIndex][self.UG_PROGNAME])
-					lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-					self.session.open(MoviePlayer, myreference, None, lastservice)
+#					lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+					self.session.open(MoviePlayer, myreference, None)
 				else:
 					self.mediaProblemPopup("Sorry, unable to find playable stream!")
 
@@ -345,8 +345,8 @@ class OpenUg(StreamsThumbCommon):
 		if out:
 			myreference = eServiceReference(4097, 0, out.split('stream_link":"')[1].split('\",')[0].replace('\/', '/'))
 			myreference.setName(self.mediaList[selIndex][self.UG_PROGNAME])
-			lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-			self.session.open(MoviePlayer, myreference, None, lastservice)
+#			lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+			self.session.open(MoviePlayer, myreference, None)
 		else:
 			self.mediaProblemPopup("Sorry, unable to find playable stream!")
 

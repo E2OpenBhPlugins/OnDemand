@@ -479,7 +479,7 @@ class shoutGenresThumb(StreamsThumbCommon):
 					<widget name="lab1" position="0,0" size="e,e" font="Regular;24" halign="center" valign="center" transparent="0" zPosition="5" />
 					<widget source="Title" render="Label" position="20,0" size="e,50" font="Regular;32" />
 					<widget name="list" position="0,50" size="e,e-50" scrollbarMode="showOnDemand" transparent="1" />
-					<ePixmap pixmap="ViX-Common/buttons/green.png" position="800,10" size="40,40" transparent="1" alphatest="on" />
+					<ePixmap pixmap="skin_default/buttons/green.png" position="800,10" size="40,40" transparent="1" alphatest="on" />
 					<widget source="key_green" render="Label" position="810,0" zPosition="1" size="200,40" font="Regular;20" valign="center" halign="center" transparent="1" />
 				</screen>"""
 
@@ -611,7 +611,7 @@ class shoutGenresThumb(StreamsThumbCommon):
 			self.getShoutcastMediaData(self.mediaList, searchurl)
 			self.updateMenu()
 			if len(self.mediaList) == 0:
-				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_INFO, timeout=5, simple = True)
+				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_INFO, timeout=5)
 		else:
 			self.close()
 
@@ -625,8 +625,8 @@ class shoutGenresThumb(StreamsThumbCommon):
 			if fileUrl:
 				fileRef = eServiceReference(4097,0,fileUrl)
 				fileRef.setName (showName)
-				lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-				self.session.open(MoviePlayer, fileRef, None, lastservice)
+#				lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+				self.session.open(MoviePlayer, fileRef, None)
 			else:
 				self.session.open(MessageBox, _('Sorry, unable to find playable stream!'), type=MessageBox.TYPE_INFO, timeout=5)
 
@@ -713,7 +713,7 @@ class FavoritesThumb(StreamsThumbCommon):
 					<widget name="lab1" position="0,0" size="e,e" font="Regular;24" halign="center" valign="center" transparent="0" zPosition="5" />
 					<widget source="Title" render="Label" position="20,0" size="e,50" font="Regular;32" />
 					<widget name="list" position="0,50" size="e,e-50" scrollbarMode="showOnDemand" transparent="1" />
-					<ePixmap pixmap="ViX-Common/buttons/yellow.png" position="800,10" size="40,40" transparent="1" alphatest="on" />
+					<ePixmap pixmap="skin_default/buttons/yellow.png" position="800,10" size="40,40" transparent="1" alphatest="on" />
 					<widget source="key_yellow" render="Label" position="810,0" zPosition="1" size="250,40" font="Regular;20" valign="center" halign="center" transparent="1" />
 				</screen>"""
 
@@ -822,8 +822,8 @@ class FavoritesThumb(StreamsThumbCommon):
 			if fileUrl:
 				fileRef = eServiceReference(4097,0,fileUrl)
 				fileRef.setName (stationName)
-				lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-				self.session.open(MoviePlayer, fileRef, None, lastservice)
+#				lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+				self.session.open(MoviePlayer, fileRef, None)
 			else:
 				self.session.open(MessageBox, _('Sorry, unable to find playable stream!'), type=MessageBox.TYPE_INFO, timeout=5)
 
@@ -899,7 +899,7 @@ class tuneinGenresThumb(StreamsThumbCommon):
 					<widget name="lab1" position="0,0" size="e,e" font="Regular;24" halign="center" valign="center" transparent="0" zPosition="5" />
 					<widget source="Title" render="Label" position="20,0" size="e,50" font="Regular;32" />
 					<widget name="list" position="0,50" size="e,e-50" scrollbarMode="showOnDemand" transparent="1" />
-					<ePixmap pixmap="ViX-Common/buttons/green.png" position="800,10" size="40,40" transparent="1" alphatest="on" />
+					<ePixmap pixmap="skin_default/buttons/green.png" position="800,10" size="40,40" transparent="1" alphatest="on" />
 					<widget source="key_green" render="Label" position="810,0" zPosition="1" size="200,40" font="Regular;20" valign="center" halign="center" transparent="1" />
 				</screen>"""
 
@@ -1017,7 +1017,7 @@ class tuneinGenresThumb(StreamsThumbCommon):
 			self.getTuneinMediaData(self.mediaList, searchurl)
 			self.updateMenu()
 			if len(self.mediaList) == 0:
-				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_INFO, timeout=5, simple = True)
+				self.session.openWithCallback(self.close, MessageBox, _("No items matching your search criteria were found"), MessageBox.TYPE_INFO, timeout=5)
 		else:
 			self.close()
 
@@ -1036,8 +1036,8 @@ class tuneinGenresThumb(StreamsThumbCommon):
 			if fileUrl:
 				fileRef = eServiceReference(4097,0,fileUrl)
 				fileRef.setName (showName)
-				lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-				self.session.open(MoviePlayer, fileRef, None, lastservice)
+#				lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+				self.session.open(MoviePlayer, fileRef, None)
 				
 				# TODO: Find out how to use this!
 				#NavigationInstance.instance.playService(fileRef)
