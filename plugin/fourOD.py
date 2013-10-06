@@ -244,6 +244,7 @@ class fourODMainMenu(Screen):
 class StreamsThumb(StreamsThumbCommon):
 	def __init__(self, session, action, value, url):
 		self.defaultImg = "Extensions/OnDemand/icons/fourOD.png"
+		self.showIcon = str(config.ondemand.ShowImages.value)
 		StreamsThumbCommon.__init__(self, session, action, value, url)
 
 	def layoutFinished(self):
@@ -297,10 +298,8 @@ class StreamsThumb(StreamsThumbCommon):
 				if fileUrl:
 					fileRef = eServiceReference(4097,0,str(fileUrl))
 					fileRef.setName (showName)
-# Black Hole
-#					lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-#					self.session.open(MoviePlayer, fileRef, None, lastservice)
-					self.session.open(MoviePlayer, fileRef)
+					lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+					self.session.open(MoviePlayer, fileRef, None, lastservice)
 				else:
 					if returnMessage:
 						self.mediaProblemPopup(returnMessage)
@@ -595,10 +594,14 @@ class StreamsThumb(StreamsThumbCommon):
 						except (Exception) as exception:
 							hasSubtitles = False
 
-						try:
-							icon = str(entry[u'group'][u'thumbnail'][u'@url'])
-						except (Exception) as exception:
-							icon = ""
+						# Only set the Icon if they are enabled
+						if self.showIcon == 'True':
+							try:
+								icon = str(entry[u'group'][u'thumbnail'][u'@url'])
+							except (Exception) as exception:
+								icon = ""
+						else:
+							icon = ''
 
 						try:
 							lastDate = datetime.fromtimestamp(mktime(strptime(str(entry[u'dc:date.TXDate']), u"%Y-%m-%dT%H:%M:%S.%fZ")))
@@ -735,10 +738,14 @@ class StreamsThumb(StreamsThumbCommon):
 						except (Exception) as exception:
 							stream = ""
 
-						try:
-							icon = str(entry['content']['thumbnail']['@url'])
-						except (Exception) as exception:
-							icon = ""
+						# Only set the Icon if they are enabled
+						if self.showIcon == 'True':
+							try:
+								icon = str(entry['content']['thumbnail']['@url'])
+							except (Exception) as exception:
+								icon = ""
+						else:
+							icon = ''
 
 						try:
 							name_tmp = str(unicode(entry['title']))
@@ -816,10 +823,14 @@ class StreamsThumb(StreamsThumbCommon):
 					except (Exception) as exception:
 						stream = ""
 
-					try:
-						icon = str(unicode(entry[u'imgUrl']))
-					except (Exception) as exception:
-						icon = ""
+					# Only set the Icon if they are enabled
+					if self.showIcon == 'True':
+						try:
+							icon = str(unicode(entry[u'imgUrl']))
+						except (Exception) as exception:
+							icon = ""
+					else:
+						icon = ''
 
 					try:
 						name_tmp = str(unicode(entry[u'value']))
@@ -858,4 +869,3 @@ def getJsonReady(value, **kwargs):
 def remove_extra_spaces(data):
 	p = re.compile(r'\s+')
 	return p.sub(' ', data)
-

@@ -27,9 +27,12 @@ from Screens.Screen import Screen
 from Screens.InfoBar import MoviePlayer as MP_parent
 from Screens.MessageBox import MessageBox
 from Screens.VirtualKeyBoard import VirtualKeyBoard
-# Black Hole
-from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_CURRENT_SKIN as SCOPE_ACTIVE_SKIN
-from enigma import eSize, ePicLoad, eTimer, eListbox, eListboxPythonMultiContent, gFont, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_TOP, RT_VALIGN_BOTTOM, RT_WRAP
+from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS
+try:
+	from Tools.Directories import SCOPE_ACTIVE_SKIN
+except:
+	from Tools.Directories import SCOPE_CURRENT_SKIN
+from enigma import eSize, ePoint, ePicLoad, eTimer, eListbox, eListboxPythonMultiContent, gFont, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_TOP, RT_VALIGN_BOTTOM, RT_WRAP
 from twisted.web import client
 from dns.resolver import Resolver
 from os import path as os_path, mkdir as os_mkdir
@@ -46,8 +49,95 @@ class Rect:
 		self.w = width
 		self.h = height
 
+class MainMenuList(HTMLComponent, GUIComponent):
+	def __init__(self):
+		GUIComponent.__init__(self)
+		self.picload = ePicLoad()
+		self.l = eListboxPythonMultiContent()
+		self.l.setBuildFunc(self.buildEntry)
+		self.onSelChanged = [ ]
+
+	def applySkin(self, desktop, screen):
+		rc = GUIComponent.applySkin(self, desktop, screen)
+		self.listHeight = self.instance.size().height()
+		self.listWidth = self.instance.size().width()
+		self.setItemsPerPage()
+		return rc
+
+	GUI_WIDGET = eListbox
+
+	def selectionChanged(self):
+		for x in self.onSelChanged:
+			if x is not None:
+				x()
+
+	def moveUp(self):
+		self.instance.moveSelection(self.instance.moveUp)
+
+	def moveDown(self):
+		self.instance.moveSelection(self.instance.moveDown)
+
+	def pageDown(self):
+		self['list'].moveTo(self['list'].instance.pageDown)
+
+	def pageUp(self):
+		self['list'].moveTo(self['list'].instance.pageUp)
+
+	def moveTo(self, dir):
+		if self.instance is not None:
+			self.instance.moveSelection(dir)
+
+	def showArrows(self):
+		rowsshown = self.listHeight / self.itemHeight
+		if self.totalitems > rowsshown:
+			print 'TRUE'
+			return 1
+		else:
+			print 'FALSE'
+			return 0
+
+	def setItemsPerPage(self):
+		self.itemHeight = 94
+		self.itemWidth = 188
+		self.l.setItemHeight(self.itemHeight)
+		self.instance.resize(eSize(self.itemWidth+15, (self.listHeight / self.itemHeight) * self.itemHeight))
+		self.listHeight = self.instance.size().height()
+		self.listWidth = self.instance.size().width()
+
+	def postWidgetCreate(self, instance):
+		instance.setWrapAround(True)
+		instance.selectionChanged.get().append(self.selectionChanged)
+		instance.setContent(self.l)
+
+	def preWidgetRemove(self, instance):
+		instance.selectionChanged.get().remove(self.selectionChanged)
+		instance.setContent(None)
+
+	def recalcEntrySize(self):
+		esize = self.l.getItemSize()
+		self.image_rect = Rect(15, 0, self.itemWidth, self.itemHeight)
+
+	def buildEntry(self, name, imagename):
+		r1 = self.image_rect
+
+		res = [ None ]
+		
+		icon = resolveFilename(SCOPE_PLUGINS, "Extensions/OnDemand/icons/%s.png" % imagename)
+		if fileExists(icon):
+			self.picload.setPara((r1.w, r1.h, 0, 0, 1, 1, "#00000000"))
+			self.picload.startDecode(icon, 0, 0, False)
+			pngthumb = self.picload.getData()
+			res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, r1.x, r1.y, r1.w, r1.h, pngthumb))
+
+ 		return res
+
+	def fillList(self, list):
+		self.totalitems = len(list)
+		self.l.setList(list)
+		self.selectionChanged()
+
 class EpisodeList(HTMLComponent, GUIComponent):
-	def __init__(self, iconDefault):
+	def __init__(self, iconDefault, showIcon):
 		GUIComponent.__init__(self)
 		self.picload = ePicLoad()
 		self.l = eListboxPythonMultiContent()
@@ -63,6 +153,7 @@ class EpisodeList(HTMLComponent, GUIComponent):
 
 		self.imagedir = "/tmp/onDemandImg/"
 		self.defaultImg = iconDefault
+		self.showIcon = showIcon
 		
 		if not os_path.exists(self.imagedir):
 			os_mkdir(self.imagedir)
@@ -156,35 +247,46 @@ class EpisodeList(HTMLComponent, GUIComponent):
 
 		res = [ None ]
 		
-		res.append((eListboxPythonMultiContent.TYPE_TEXT, r2.x+r1.w, r2.y, r2.w, r2.h, 0, RT_HALIGN_LEFT|RT_VALIGN_TOP, name))
-		res.append((eListboxPythonMultiContent.TYPE_TEXT, r3.x+r1.w, r3.y+r2.h, r3.w, r3.h, 2, RT_HALIGN_LEFT|RT_VALIGN_TOP|RT_WRAP, short))
-		res.append((eListboxPythonMultiContent.TYPE_TEXT, r4.x+r1.w, r4.y+r2.h+r3.h, r4.w, r4.h, 1, RT_HALIGN_RIGHT|RT_VALIGN_BOTTOM, date))
-		if duration:
-			res.append((eListboxPythonMultiContent.TYPE_TEXT, r4.x+r1.w, r4.y+r2.h+r3.h, r4.w, r4.h, 1, RT_HALIGN_LEFT|RT_VALIGN_BOTTOM, duration))
+		# If we don't want to show the icons then shift everything to the left.
+		if self.showIcon != 'False':
+			res.append((eListboxPythonMultiContent.TYPE_TEXT, r2.x+r1.w, r2.y, r2.w, r2.h, 0, RT_HALIGN_LEFT|RT_VALIGN_TOP, name))
+			res.append((eListboxPythonMultiContent.TYPE_TEXT, r3.x+r1.w, r3.y+r2.h, r3.w, r3.h, 2, RT_HALIGN_LEFT|RT_VALIGN_TOP|RT_WRAP, short))
+			res.append((eListboxPythonMultiContent.TYPE_TEXT, r4.x+r1.w, r4.y+r2.h+r3.h, r4.w, r4.h, 1, RT_HALIGN_RIGHT|RT_VALIGN_BOTTOM, date))
+			if duration:
+				res.append((eListboxPythonMultiContent.TYPE_TEXT, r4.x+r1.w, r4.y+r2.h+r3.h, r4.w, r4.h, 1, RT_HALIGN_LEFT|RT_VALIGN_BOTTOM, duration))
 
-		self.picload.setPara((r1.w, r1.h, 0, 0, 1, 1, "#00000000"))
-		self.picload.startDecode(resolveFilename(SCOPE_PLUGINS, "Extensions/OnDemand/icons/empty.png"), 0, 0, False)
-		pngthumb = self.picload.getData()
+			self.picload.setPara((r1.w, r1.h, 0, 0, 1, 1, "#00000000"))
+			self.picload.startDecode(resolveFilename(SCOPE_PLUGINS, "Extensions/OnDemand/icons/empty.png"), 0, 0, False)
+			pngthumb = self.picload.getData()
 
-		if icon:
-			tmp_icon = self.getThumbnailName(icon)
-			thumbnailFile = self.imagedir + tmp_icon
+			if icon:
+				tmp_icon = self.getThumbnailName(icon)
+				thumbnailFile = self.imagedir + tmp_icon
 
-			if os_path.exists(thumbnailFile):
-				self.picload.startDecode(thumbnailFile, 0, 0, False)
-				pngthumb = self.picload.getData()
-				res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, r1.x, r1.y, r1.w, r1.h, pngthumb))
+				if os_path.exists(thumbnailFile):
+					self.picload.startDecode(thumbnailFile, 0, 0, False)
+					pngthumb = self.picload.getData()
+					res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, r1.x, r1.y, r1.w, r1.h, pngthumb))
+				else:
+					self.picload.startDecode(resolveFilename(SCOPE_PLUGINS, "Extensions/OnDemand/icons/empty.png"), 0, 0, False)
+					pngthumb = self.picload.getData()
+					res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, r1.x, r1.y, r1.w, r1.h, pngthumb))
 			else:
-				self.picload.startDecode(resolveFilename(SCOPE_PLUGINS, "Extensions/OnDemand/icons/empty.png"), 0, 0, False)
+				self.picload.startDecode(resolveFilename(SCOPE_PLUGINS, self.defaultImg), 0, 0, False)
 				pngthumb = self.picload.getData()
 				res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, r1.x, r1.y, r1.w, r1.h, pngthumb))
 		else:
-			self.picload.startDecode(resolveFilename(SCOPE_PLUGINS, self.defaultImg), 0, 0, False)
-			pngthumb = self.picload.getData()
-			res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, r1.x, r1.y, r1.w, r1.h, pngthumb))
+			res.append((eListboxPythonMultiContent.TYPE_TEXT, r2.x, r2.y, r2.w, r2.h, 0, RT_HALIGN_LEFT|RT_VALIGN_TOP, name))
+			res.append((eListboxPythonMultiContent.TYPE_TEXT, r3.x, r3.y+r2.h, r3.w, r3.h, 2, RT_HALIGN_LEFT|RT_VALIGN_TOP|RT_WRAP, short))
+			res.append((eListboxPythonMultiContent.TYPE_TEXT, r4.x+r1.w, r4.y+r2.h+r3.h, r4.w, r4.h, 1, RT_HALIGN_RIGHT|RT_VALIGN_BOTTOM, date))
+			if duration:
+				res.append((eListboxPythonMultiContent.TYPE_TEXT, r4.x, r4.y+r2.h+r3.h, r4.w, r4.h, 1, RT_HALIGN_LEFT|RT_VALIGN_BOTTOM, duration))
 
 		self.picload.setPara((self.l.getItemSize().width(), 2, 0, 0, 1, 1, "#00000000"))
-		self.picload.startDecode(resolveFilename(SCOPE_ACTIVE_SKIN, "div-h.png"), 0, 0, False)
+		try:
+			self.picload.startDecode(resolveFilename(SCOPE_ACTIVE_SKIN, "div-h.png"), 0, 0, False)
+		except:
+			self.picload.startDecode(resolveFilename(SCOPE_CURRENT_SKIN, "skin_default/div-h.png"), 0, 0, False)
 		pngthumb = self.picload.getData()
 		res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, 0, self.l.getItemSize().height()-2, self.l.getItemSize().width(), 2, pngthumb))
 
@@ -226,7 +328,7 @@ class StreamsThumbCommon(Screen):
 		self.skin = """
 				<screen position="0,0" size="e,e" flags="wfNoBorder" >
 					<widget name="lab1" position="0,0" size="e,e" font="Regular;24" halign="center" valign="center" transparent="0" zPosition="5" />
-					<widget source="Title" render="Label" position="20,0" size="e,50" font="Regular;30" />
+					<widget source="Title" render="Label" position="20,0" size="e,50" font="Regular;32" />
 					<widget name="list" position="0,50" size="e,e-50" scrollbarMode="showOnDemand" transparent="1" />
 				</screen>"""
 		self.session = session
@@ -254,7 +356,7 @@ class StreamsThumbCommon(Screen):
 		if (os_path.exists(self.imagedir) != True):
 			os_mkdir(self.imagedir)
 
-		self['list'] = EpisodeList(self.defaultImg)
+		self['list'] = EpisodeList(self.defaultImg, self.showIcon)
 		self.updateMenu()
 
 		self["actions"] = ActionMap(["SetupActions", "DirectionActions"],
@@ -312,7 +414,8 @@ class StreamsThumbCommon(Screen):
 class MyHTTPConnection(HTTPConnection):
 	def connect (self):
 		resolver = Resolver()
-		resolver.nameservers = ['192.95.16.109']  #tunlr dns address
+		resolver.nameservers = ['69.197.169.9']  #tunlr dns address
+		#resolver.nameservers = ['208.122.23.22']  #Unblock-US dns address
 		answer = resolver.query(self.host,'A')
 		self.host = answer.rrset.items[0].address
 		self.sock = socket.create_connection ((self.host, self.port))
@@ -324,10 +427,8 @@ class MyHTTPHandler(urllib2.HTTPHandler):
 ###########################################################################	   
 class MoviePlayer(MP_parent):
 	def __init__(self, session, service, slist = None, lastservice = None):
-# Black Hole
-#		MP_parent.__init__(self, session, service, slist, lastservice)
-		MP_parent.__init__(self, session, service)
-		
+		MP_parent.__init__(self, session, service, slist, lastservice)
+
 	def leavePlayer(self):
 		self.close()
 
