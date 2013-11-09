@@ -119,7 +119,7 @@ class OnDemand_Screen(Screen, ConfigListScreen):
 		self["arrowup"]   = MultiPixmap()
 		self["arrowdown"]   = MultiPixmap()
 
-		self["actions"]  = ActionMap(["SetupActions", "TimerEditActions"], {
+		self["actions"]  = ActionMap(["OkCancelActions", "ShortcutActions", "WizardActions", "ColorActions", "SetupActions", "NumberActions", "MenuActions", "HelpActions"], {
 			"ok"    : self.keyOK,
 			"cancel": self.keyCancel,
 			"menu" : self.keySetup,
